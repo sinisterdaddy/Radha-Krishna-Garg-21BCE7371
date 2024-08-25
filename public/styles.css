@@ -1,0 +1,118 @@
+body {
+    background-color: #1c1c1c;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+}
+
+#current-player {
+    margin-bottom: 20px;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(5, 60px);
+    grid-template-rows: repeat(5, 60px);
+    gap: 5px;
+    margin-bottom: 20px;
+}
+
+.square {
+    width: 60px;
+    height: 60px;
+    background-color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+    color: #000;
+}
+
+.square.active {
+    background-color: #3b82f6;
+}
+
+.square.selected {
+    background-color: #60a5fa;
+}
+
+#selected-piece {
+    margin-bottom: 10px;
+}
+
+.controls button {
+    background-color: #1e3a8a;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.controls button:hover {
+    background-color: #2563eb;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+}
+.board {
+    display: grid;
+    grid-template-columns: repeat(5, 60px);
+    grid-template-rows: repeat(5, 60px);
+    gap: 5px;
+    margin-bottom: 20px;
+    transition: transform 0.5s ease; /* Smooth rotation */
+}
+
+.square {
+    width: 60px;
+    height: 60px;
+    background-color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+    color: #000;
+    transform: rotate(0deg); /* Default rotation for pieces */
+}
+
+.square.selected {
+    background-color: #60a5fa;
+}
+
+.square.active {
+    background-color: #3b82f6;
+}
+
+#selected-piece {
+    margin-bottom: 10px;
+}
+
+.controls button {
+    background-color: #1e3a8a;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.controls button:hover {
+    background-color: #2563eb;
+}

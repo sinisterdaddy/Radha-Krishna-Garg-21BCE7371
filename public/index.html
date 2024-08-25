@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess-like Game Interface</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2 id="current-player">Current Player: A</h2>
+        <div id="board" class="board">
+            <!-- Grid cells will be populated by JavaScript -->
+        </div>
+        <div id="selected-piece">Selected: None</div>
+        <div class="controls">
+            <button id="move-left">L</button>
+            <button id="move-right">R</button>
+            <button id="move-forward">F</button>
+            <button id="move-backward">B</button>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
