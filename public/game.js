@@ -10,7 +10,6 @@ const pieces = [
     '', '', '', '', '',
     '', '', '', '', '',
     'A-P1', 'A-P2', 'A-H1', 'A-H2', 'A-P3'
-
 ];
 
 // Populate the board with pieces
@@ -26,13 +25,27 @@ function renderBoard() {
         board.appendChild(square);
     });
 }
+function enableDiagonalButtons(enable) {
+    const diagonalButtons = ['move-fl', 'move-fr', 'move-bl', 'move-br'];
+    const basicButtons = ['move-left', 'move-right', 'move-forward', 'move-backward'];
+
+    // Show diagonal buttons and hide basic buttons if enable is true
+    diagonalButtons.forEach(id => {
+        document.getElementById(id).style.display = enable ? 'inline-block' : 'none';
+    });
+
+    // Hide diagonal buttons and show basic buttons if enable is false
+    basicButtons.forEach(id => {
+        document.getElementById(id).style.display = enable ? 'none' : 'inline-block';
+    });
+}
 
 // Handle piece selection
 function selectPiece(index) {
     const squares = document.querySelectorAll('.square');
     squares.forEach(square => square.classList.remove('selected'));
 
-    if (pieces[index] && pieces[index].startsWith(currentPlayer)) { // Only allow selection of the current player's pieces
+    if (pieces[index] && pieces[index].startsWith(currentPlayer)) {
         selectedPiece = { piece: pieces[index], index };
         squares[index].classList.add('selected');
         selectedPieceDisplay.innerText = `Selected: ${pieces[index]}`;
@@ -48,19 +61,7 @@ function selectPiece(index) {
     }
 }
 
-function enableDiagonalButtons(enable) {
-    document.getElementById('move-fl').disabled = !enable;
-    document.getElementById('move-fr').disabled = !enable;
-    document.getElementById('move-bl').disabled = !enable;
-    document.getElementById('move-br').disabled = !enable;
-}
-
-
 // Movement functions
-document.getElementById('move-left').addEventListener('click', () => movePiece('L'));
-document.getElementById('move-right').addEventListener('click', () => movePiece('R'));
-document.getElementById('move-forward').addEventListener('click', () => movePiece('F'));
-document.getElementById('move-backward').addEventListener('click', () => movePiece('B'));
 function movePiece(direction) {
     if (!selectedPiece) {
         alert('Please select a piece first');
@@ -93,20 +94,21 @@ function movePiece(direction) {
         alert('Invalid move!');
     }
 }
+
 function calculateNewIndex(index, direction, distance) {
     let step;
     switch (direction) {
         case 'L':
-            step = currentPlayer === 'A' ? -1 : 1; // Player A: Left decreases index, Player B: Left increases index
+            step = currentPlayer === 'A' ? -1 : 1;
             break;
         case 'R':
-            step = currentPlayer === 'A' ? 1 : -1; // Player A: Right increases index, Player B: Right decreases index
+            step = currentPlayer === 'A' ? 1 : -1;
             break;
         case 'F':
-            step = currentPlayer === 'A' ? -5 : 5; // Forward: A moves up, B moves down
+            step = currentPlayer === 'A' ? -5 : 5;
             break;
         case 'B':
-            step = currentPlayer === 'A' ? 5 : -5; // Backward: A moves down, B moves up
+            step = currentPlayer === 'A' ? 5 : -5;
             break;
         default:
             alert('Invalid direction');
@@ -115,6 +117,7 @@ function calculateNewIndex(index, direction, distance) {
 
     return index + (step * distance);
 }
+
 function calculateDiagonalNewIndex(index, direction, distance) {
     let step;
     switch (direction) {
@@ -138,22 +141,16 @@ function calculateDiagonalNewIndex(index, direction, distance) {
     return index + (step * distance);
 }
 
-
 function isValidMove(piece, index, newIndex) {
-    // Check out-of-bounds
     if (newIndex < 0 || newIndex >= pieces.length) return false;
 
-    // Check if targeting a friendly character
     if (pieces[newIndex] && pieces[newIndex].startsWith(currentPlayer)) return false;
 
-    // Additional character-specific validation can be added here
     return true;
 }
 
 function performMove(piece, index, newIndex, direction) {
-    // Combat: Remove any opponent's character in the way or at the destination
     if (piece.includes('H1')) {
-        // Hero1: Clear any opponent in the path
         const pathIndices = getPathIndices(index, newIndex, direction, 2);
         pathIndices.forEach(i => {
             if (pieces[i] && !pieces[i].startsWith(currentPlayer)) {
@@ -161,7 +158,6 @@ function performMove(piece, index, newIndex, direction) {
             }
         });
     } else if (piece.includes('H2')) {
-        // Hero2: Clear any opponent in the path
         const pathIndices = getPathIndices(index, newIndex, direction, 2, true);
         pathIndices.forEach(i => {
             if (pieces[i] && !pieces[i].startsWith(currentPlayer)) {
@@ -169,20 +165,18 @@ function performMove(piece, index, newIndex, direction) {
             }
         });
     } else {
-        // Pawn or other character: Only remove the opponent at the destination
         if (pieces[newIndex] && !pieces[newIndex].startsWith(currentPlayer)) {
-            pieces[newIndex] = ''; // Remove opponent's piece
+            pieces[newIndex] = '';
         }
     }
 
-    // Perform the move
-    pieces[index] = ''; // Clear the old position
-    pieces[newIndex] = piece; // Place the piece in the new position
-    selectedPiece.index = newIndex; // Update the selected piece's index
-    renderBoard(); // Re-render the board to reflect changes
-    switchPlayer(); // Switch the turn to the other player and rotate the board
+    pieces[index] = '';
+    pieces[newIndex] = piece;
+    selectedPiece.index = newIndex;
+    renderBoard();
+    checkForWinner(); // Check if the game has been won after each move
+    switchPlayer();
 }
-
 function getPathIndices(startIndex, endIndex, direction, distance, diagonal = false) {
     const indices = [];
     let currentIndex = startIndex;
@@ -198,22 +192,68 @@ function getPathIndices(startIndex, endIndex, direction, distance, diagonal = fa
 
     return indices;
 }
-
 function switchPlayer() {
-    // Switch to the other player
     currentPlayer = currentPlayer === 'A' ? 'B' : 'A';
+    document.getElementById('current-player').innerText = `Current Player: ${currentPlayer}`;
 
-    // Rotate the board 180 degrees to switch perspectives
+    // Rotate the board to give the current player the correct perspective
     if (currentPlayer === 'B') {
-        board.style.transform = 'rotate(180deg)';
-        board.childNodes.forEach(child => child.style.transform = 'rotate(180deg)');
+        board.classList.add('rotated');
     } else {
-        board.style.transform = 'rotate(0deg)';
-        board.childNodes.forEach(child => child.style.transform = 'rotate(0deg)');
+        board.classList.remove('rotated');
     }
 
-    // Update the current player display
+    enableDiagonalButtons(false); // Reset to basic buttons at the start of each turn
+}
+
+
+function checkForWinner() {
+    const playerACharacters = pieces.filter(piece => piece.startsWith('A')).length;
+    const playerBCharacters = pieces.filter(piece => piece.startsWith('B')).length;
+
+    if (playerACharacters === 0) {
+        alert('Player B wins!');
+        endGame('B');
+    } else if (playerBCharacters === 0) {
+        alert('Player A wins!');
+        endGame('A');
+    }
+}
+
+function endGame(winner) {
+    alert(`Player ${winner} wins!`);
+    const playAgain = confirm('Do you want to play again?');
+
+    if (playAgain) {
+        resetGame();
+    } else {
+        // Optionally, you could disable the board or buttons here to prevent further moves.
+        disableBoard();
+    }
+}
+
+function disableBoard() {
+    const squares = document.querySelectorAll('.square');
+    squares.forEach(square => {
+        square.removeEventListener('click', selectPiece);
+    });
+}
+
+function resetGame() {
+    // Reset the game to its initial state
+    pieces = [
+        'B-P1', 'B-P2', 'B-H1', 'B-H2', 'B-P3',
+        '', '', '', '', '',
+        '', '', '', '', '',
+        '', '', '', '', '',
+        'A-P1', 'A-P2', 'A-H1', 'A-H2', 'A-P3'
+    ];
+
+    selectedPiece = null;
+    currentPlayer = 'A';
     document.getElementById('current-player').innerText = `Current Player: ${currentPlayer}`;
+    renderBoard();
+    enableDiagonalButtons(false); // Reset the buttons
 }
 
 // Initialize the board on page load
