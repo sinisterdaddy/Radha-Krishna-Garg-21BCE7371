@@ -31,20 +31,37 @@ function renderBoard() {
 function selectPiece(index) {
     const squares = document.querySelectorAll('.square');
     squares.forEach(square => square.classList.remove('selected'));
+
     if (pieces[index] && pieces[index].startsWith(currentPlayer)) { // Only allow selection of the current player's pieces
         selectedPiece = { piece: pieces[index], index };
         squares[index].classList.add('selected');
         selectedPieceDisplay.innerText = `Selected: ${pieces[index]}`;
+
+        // Enable or disable diagonal movement buttons based on the selected piece
+        if (selectedPiece.piece.includes('H2')) {
+            enableDiagonalButtons(true);
+        } else {
+            enableDiagonalButtons(false);
+        }
     } else {
         alert(`It's not your turn or you selected the wrong piece! Current Player: ${currentPlayer}`);
     }
 }
 
+function enableDiagonalButtons(enable) {
+    document.getElementById('move-fl').disabled = !enable;
+    document.getElementById('move-fr').disabled = !enable;
+    document.getElementById('move-bl').disabled = !enable;
+    document.getElementById('move-br').disabled = !enable;
+}
+
+
 // Movement functions
 document.getElementById('move-left').addEventListener('click', () => movePiece('L'));
 document.getElementById('move-right').addEventListener('click', () => movePiece('R'));
 document.getElementById('move-forward').addEventListener('click', () => movePiece('F'));
-document.getElementById('move-backward').addEventListener('click', () => movePiece('B'));function movePiece(direction) {
+document.getElementById('move-backward').addEventListener('click', () => movePiece('B'));
+function movePiece(direction) {
     if (!selectedPiece) {
         alert('Please select a piece first');
         return;
