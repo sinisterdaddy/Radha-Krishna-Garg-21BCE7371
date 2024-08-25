@@ -14,11 +14,15 @@
         </div>
         <div id="selected-piece">Selected: None</div>
         <div class="controls">
-            <button id="move-left">L</button>
-            <button id="move-right">R</button>
-            <button id="move-forward">F</button>
-            <button id="move-backward">B</button>
-        </div>
+            <button id="move-left" onclick="movePiece('L')">L</button>
+            <button id="move-right" onclick="movePiece('R')">R</button>
+            <button id="move-forward" onclick="movePiece('F')">F</button>
+            <button id="move-backward" onclick="movePiece('B')">B</button>
+            <button id="move-fl" onclick="movePiece('FL')">FL</button>
+            <button id="move-fr" onclick="movePiece('FR')">FR</button>
+            <button id="move-bl" onclick="movePiece('BL')">BL</button>
+            <button id="move-br" onclick="movePiece('BR')">BR</button>
+        </div>        
     </div>
     <script src="game.js"></script>
 </body>

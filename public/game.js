@@ -76,30 +76,6 @@ document.getElementById('move-backward').addEventListener('click', () => movePie
         alert('Invalid move!');
     }
 }
-
-function calculateNewIndex(index, direction, distance) {
-    let step;
-    switch (direction) {
-        case 'L':
-            step = -1;
-            break;
-        case 'R':
-            step = 1;
-            break;
-        case 'F':
-            step = currentPlayer === 'A' ? -5 : 5; // Forward: A moves up, B moves down
-            break;
-        case 'B':
-            step = currentPlayer === 'A' ? 5 : -5; // Backward: A moves down, B moves up
-            break;
-        default:
-            alert('Invalid direction');
-            return index;
-    }
-
-    return index + (step * distance);
-}
-
 function calculateNewIndex(index, direction, distance) {
     let step;
     switch (direction) {
@@ -122,6 +98,29 @@ function calculateNewIndex(index, direction, distance) {
 
     return index + (step * distance);
 }
+function calculateDiagonalNewIndex(index, direction, distance) {
+    let step;
+    switch (direction) {
+        case 'FL':
+            step = currentPlayer === 'A' ? -6 : 6; // Forward-Left
+            break;
+        case 'FR':
+            step = currentPlayer === 'A' ? -4 : 4; // Forward-Right
+            break;
+        case 'BL':
+            step = currentPlayer === 'A' ? 4 : -4; // Backward-Left
+            break;
+        case 'BR':
+            step = currentPlayer === 'A' ? 6 : -6; // Backward-Right
+            break;
+        default:
+            alert('Invalid direction');
+            return index;
+    }
+
+    return index + (step * distance);
+}
+
 
 function isValidMove(piece, index, newIndex) {
     // Check out-of-bounds
