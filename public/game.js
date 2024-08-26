@@ -41,14 +41,21 @@ function enableDiagonalButtons(enable) {
 }
 
 // Handle piece selection
+
 function selectPiece(index) {
     const squares = document.querySelectorAll('.square');
-    squares.forEach(square => square.classList.remove('selected'));
+    squares.forEach(square => {
+        square.classList.remove('selected', 'valid-move');
+        square.onclick = null; // Clear previous onclick handlers
+    });
 
     if (pieces[index] && pieces[index].startsWith(currentPlayer)) {
         selectedPiece = { piece: pieces[index], index };
         squares[index].classList.add('selected');
         selectedPieceDisplay.innerText = `Selected: ${pieces[index]}`;
+
+        // Highlight valid moves
+        highlightValidMoves(selectedPiece.piece, selectedPiece.index);
 
         // Enable or disable diagonal movement buttons based on the selected piece
         if (selectedPiece.piece.includes('H2')) {
@@ -61,6 +68,64 @@ function selectPiece(index) {
     }
 }
 
+function highlightValidMoves(piece, index) {
+    const squares = document.querySelectorAll('.square');
+    const validMoves = getValidMoves(piece, index);
+
+    squares.forEach(square => {
+        square.classList.remove('valid-move');
+        square.onclick = null;
+    });
+
+    validMoves.forEach(move => {
+        if (move >= 0 && move < pieces.length && isValidMove(piece, index, move)) {
+            const square = squares[move];
+            square.classList.add('valid-move');
+            square.onclick = () => movePieceTo(move);
+        }
+    });
+}
+
+function getValidMoves(piece, index) {
+    let validMoves = [];
+
+    if (piece.includes('P')) { // Pawn
+        ['L', 'R', 'F', 'B'].forEach(dir => {
+            const newIndex = calculateNewIndex(index, dir, 1);
+            if (isValidMove(piece, index, newIndex)) validMoves.push(newIndex);
+        });
+    } else if (piece.includes('H1')) { // Hero1
+        ['L', 'R', 'F', 'B'].forEach(dir => {
+            const newIndex = calculateNewIndex(index, dir, 2);
+            if (isValidMove(piece, index, newIndex)) validMoves.push(newIndex);
+        });
+    } else if (piece.includes('H2')) { // Hero2
+        ['FL', 'FR', 'BL', 'BR'].forEach(dir => {
+            const newIndex = calculateDiagonalNewIndex(index, dir, 2);
+            if (isValidMove(piece, index, newIndex)) validMoves.push(newIndex);
+        });
+    }
+
+    return validMoves;
+}
+
+function movePieceTo(newIndex) {
+    if (!selectedPiece) return;
+
+    const { piece, index } = selectedPiece;
+
+    if (isValidMove(piece, index, newIndex)) {
+        pieces[index] = '';
+        pieces[newIndex] = piece;
+
+        selectedPiece = null;
+        renderBoard(); // Re-render the board to reflect changes
+        checkForWinner(); // Check if the game has been won
+        if (!gameOver) {
+            switchPlayer(); // Switch to the next player if the game is not over
+        }
+    }
+}
 // Movement functions
 function movePiece(direction) {
     if (!selectedPiece) {
@@ -94,6 +159,7 @@ function movePiece(direction) {
         alert('Invalid move!');
     }
 }
+
 
 function calculateNewIndex(index, direction, distance) {
     let newIndex = index;
@@ -141,52 +207,79 @@ function calculateNewIndex(index, direction, distance) {
 
 function calculateDiagonalNewIndex(index, direction, distance) {
     let newIndex = index;
+    const row = Math.floor(index / 5);
+    const col = index % 5;
+
+    console.log(`Calculating diagonal move from index: ${index}, direction: ${direction}, distance: ${distance}, for player: ${currentPlayer}`);
 
     switch (direction) {
         case 'FL':
-            if (currentPlayer === 'A' && index % 5 !== 0 && index >= 5) {
+            if (currentPlayer === 'A' && col - distance >= 0 && row - distance >= 0) {
                 newIndex -= 6 * distance; // Forward-Left for Player A
-            } else if (currentPlayer === 'B' && index % 5 !== 4 && index < 20) {
-                newIndex += 6 * distance; // Forward-Left for Player B (which is actually Backward-Right)
+                console.log(`FL move for Player A: New index: ${newIndex}`);
+            } else if (currentPlayer === 'B' && col + distance < 5 && row + distance < 5) {
+                newIndex += 6 * distance; // Forward-Left for Player B (Backward-Right)
+                console.log(`FL move for Player B: New index: ${newIndex}`);
             }
             break;
         case 'FR':
-            if (currentPlayer === 'A' && index % 5 !== 4 && index >= 5) {
+            if (currentPlayer === 'A' && col + distance < 5 && row - distance >= 0) {
                 newIndex -= 4 * distance; // Forward-Right for Player A
-            } else if (currentPlayer === 'B' && index % 5 !== 0 && index < 20) {
-                newIndex += 4 * distance; // Forward-Right for Player B (which is actually Backward-Left)
+                console.log(`FR move for Player A: New index: ${newIndex}`);
+            } else if (currentPlayer === 'B' && col - distance >= 0 && row + distance < 5) {
+                newIndex += 4 * distance; // Forward-Right for Player B (Backward-Left)
+                console.log(`FR move for Player B: New index: ${newIndex}`);
             }
             break;
         case 'BL':
-            if (currentPlayer === 'A' && index % 5 !== 0 && index < 20) {
+            if (currentPlayer === 'A' && col - distance >= 0 && row + distance < 5) {
                 newIndex += 4 * distance; // Backward-Left for Player A
-            } else if (currentPlayer === 'B' && index % 5 !== 4 && index >= 5) {
-                newIndex -= 4 * distance; // Backward-Left for Player B (which is actually Forward-Right)
+                console.log(`BL move for Player A: New index: ${newIndex}`);
+            } else if (currentPlayer === 'B' && col + distance < 5 && row - distance >= 0) {
+                newIndex -= 4 * distance; // Backward-Left for Player B (Forward-Right)
+                console.log(`BL move for Player B: New index: ${newIndex}`);
             }
             break;
         case 'BR':
-            if (currentPlayer === 'A' && index % 5 !== 4 && index < 20) {
+            if (currentPlayer === 'A' && col + distance < 5 && row + distance < 5) {
                 newIndex += 6 * distance; // Backward-Right for Player A
-            } else if (currentPlayer === 'B' && index % 5 !== 0 && index >= 5) {
-                newIndex -= 6 * distance; // Backward-Right for Player B (which is actually Forward-Left)
+                console.log(`BR move for Player A: New index: ${newIndex}`);
+            } else if (currentPlayer === 'B' && col - distance >= 0 && row - distance >= 0) {
+                newIndex -= 6 * distance; // Backward-Right for Player B (Forward-Left)
+                console.log(`BR move for Player B: New index: ${newIndex}`);
             }
             break;
         default:
+            console.log(`Invalid direction: ${direction}`);
             return index; // Invalid direction, return the current index
     }
 
-    // Ensure the new index is within bounds
+    // Ensure the move doesn't wrap around the board
+    const newRow = Math.floor(newIndex / 5);
+    const newCol = newIndex % 5;
+
+    if (Math.abs(newRow - row) !== distance || Math.abs(newCol - col) !== distance) {
+        console.log(`Invalid diagonal move: Wrap-around detected.`);
+        return index; // Invalid move due to wrap-around
+    }
+
+    // Ensure the new index is within bounds and valid
     if (newIndex < 0 || newIndex >= pieces.length) {
+        console.log(`New index out of bounds: ${newIndex}. Reverting to original index: ${index}`);
         return index;
     }
 
+    console.log(`Final calculated new index: ${newIndex}`);
     return newIndex;
 }
 
 
+
 function isValidMove(piece, index, newIndex) {
+    // Invalid if out of bounds
     if (newIndex < 0 || newIndex >= pieces.length) return false;
 
+    // Invalid if targets a friendly character
     if (pieces[newIndex] && pieces[newIndex].startsWith(currentPlayer)) return false;
 
     return true;

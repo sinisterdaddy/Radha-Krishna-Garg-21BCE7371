@@ -146,3 +146,11 @@ body {
 .rotated .square {
     transform: rotate(180deg); /* Rotate pieces back when board is rotated */
 }
+.valid-move {
+    background-color: #4caf50; /* Green highlight for valid moves */
+    cursor: pointer;
+}
+
+.square {
+    transition: background-color 0.3s ease; /* Smooth transition for highlighting */
+}
