@@ -4,7 +4,7 @@ let selectedPiece = null;
 let currentPlayer = 'A';
 
 // Example pieces for demonstration
-const pieces = [
+let pieces = [
     'B-P1', 'B-P2', 'B-H1', 'B-H2', 'B-P3',
     '', '', '', '', '',
     '', '', '', '', '',
@@ -173,10 +173,14 @@ function performMove(piece, index, newIndex, direction) {
     pieces[index] = '';
     pieces[newIndex] = piece;
     selectedPiece.index = newIndex;
-    renderBoard();
-    checkForWinner(); // Check if the game has been won after each move
-    switchPlayer();
+
+    renderBoard(); // Re-render the board to reflect changes
+    checkForWinner(); // Now check if the game has been won
+    if (!gameOver) {
+        switchPlayer(); // Switch to the next player if the game is not over
+    }
 }
+
 function getPathIndices(startIndex, endIndex, direction, distance, diagonal = false) {
     const indices = [];
     let currentIndex = startIndex;
@@ -206,30 +210,31 @@ function switchPlayer() {
     enableDiagonalButtons(false); // Reset to basic buttons at the start of each turn
 }
 
+let gameOver = false;
 
 function checkForWinner() {
     const playerACharacters = pieces.filter(piece => piece.startsWith('A')).length;
     const playerBCharacters = pieces.filter(piece => piece.startsWith('B')).length;
 
     if (playerACharacters === 0) {
-        alert('Player B wins!');
         endGame('B');
     } else if (playerBCharacters === 0) {
-        alert('Player A wins!');
         endGame('A');
     }
 }
 
 function endGame(winner) {
-    alert(`Player ${winner} wins!`);
-    const playAgain = confirm('Do you want to play again?');
+    gameOver = true; // Set the game over flag
+    setTimeout(() => {
+        alert(`Player ${winner} wins!`);
+        const playAgain = confirm('Do you want to play again?');
 
-    if (playAgain) {
-        resetGame();
-    } else {
-        // Optionally, you could disable the board or buttons here to prevent further moves.
-        disableBoard();
-    }
+        if (playAgain) {
+            resetGame();
+        } else {
+            disableBoard();
+        }
+    }, 100); // Delay the alert to ensure the last move is rendered
 }
 
 function disableBoard() {
@@ -240,7 +245,9 @@ function disableBoard() {
 }
 
 function resetGame() {
-    // Reset the game to its initial state
+    gameOver = false; // Reset the game over flag
+
+    // Reinitialize the game pieces
     pieces = [
         'B-P1', 'B-P2', 'B-H1', 'B-H2', 'B-P3',
         '', '', '', '', '',
@@ -249,12 +256,24 @@ function resetGame() {
         'A-P1', 'A-P2', 'A-H1', 'A-H2', 'A-P3'
     ];
 
-    selectedPiece = null;
-    currentPlayer = 'A';
+    selectedPiece = null; // Clear the selected piece
+    currentPlayer = 'A'; // Reset the current player to A
     document.getElementById('current-player').innerText = `Current Player: ${currentPlayer}`;
+
+    // Re-render the board to reflect the initial state
     renderBoard();
-    enableDiagonalButtons(false); // Reset the buttons
+
+    // Reset the buttons to the initial state
+    enableDiagonalButtons(false);
+
+    // Re-enable the event listeners if they were disabled
+    const squares = document.querySelectorAll('.square');
+    squares.forEach(square => {
+        square.addEventListener('click', selectPiece);
+    });
 }
+
+
 
 // Initialize the board on page load
 renderBoard();
