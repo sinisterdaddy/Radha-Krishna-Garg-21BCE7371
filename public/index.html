@@ -4,81 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chess-like Game Interface</title>
-    <style>
-        /* Your integrated CSS */
-        body {
-            background-color: #1c1c1c;
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .container {
-            text-align: center;
-        }
-
-        #current-player {
-            margin-bottom: 20px;
-        }
-
-        .board {
-            display: grid;
-            grid-template-columns: repeat(5, 60px);
-            grid-template-rows: repeat(5, 60px);
-            gap: 5px;
-            margin-bottom: 20px;
-            transition: transform 0.5s ease; /* Smooth rotation */
-        }
-
-        .square {
-            width: 60px;
-            height: 60px;
-            background-color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            border-radius: 4px;
-            font-weight: bold;
-            color: #000;
-            transform: rotate(0deg); /* Default rotation for pieces */
-        }
-
-        .square.selected {
-            background-color: #60a5fa;
-        }
-
-        .square.active {
-            background-color: #3b82f6;
-        }
-
-        #selected-piece {
-            margin-bottom: 10px;
-        }
-
-        .controls button {
-            background-color: #1e3a8a;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            margin: 5px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .controls button:hover {
-            background-color: #2563eb;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: center;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
@@ -87,25 +13,19 @@
             <!-- Grid cells will be populated by JavaScript -->
         </div>
         <div id="selected-piece">Selected: None</div>
-        
-        <!-- Move History Section -->
-        <div id="move-history">
-            <h3>Move History:</h3>
-            <ul id="history-list"></ul>
-        </div>
-        
         <div class="controls">
             <button id="move-left" onclick="movePiece('L')">L</button>
             <button id="move-right" onclick="movePiece('R')">R</button>
             <button id="move-forward" onclick="movePiece('F')">F</button>
             <button id="move-backward" onclick="movePiece('B')">B</button>
+            <!-- Diagonal buttons, initially hidden -->
             <button id="move-fl" onclick="movePiece('FL')" style="display: none;">FL</button>
             <button id="move-fr" onclick="movePiece('FR')" style="display: none;">FR</button>
             <button id="move-bl" onclick="movePiece('BL')" style="display: none;">BL</button>
             <button id="move-br" onclick="movePiece('BR')" style="display: none;">BR</button>
         </div>
+        
     </div>
-    
     <script src="game.js"></script>
 </body>
 </html>

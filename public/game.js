@@ -96,50 +96,93 @@ function movePiece(direction) {
 }
 
 function calculateNewIndex(index, direction, distance) {
-    let step;
+    let newIndex = index;
+
     switch (direction) {
         case 'L':
-            step = currentPlayer === 'A' ? -1 : 1;
+            if (currentPlayer === 'A' && index % 5 !== 0) {
+                newIndex -= distance; // Move left for Player A
+            } else if (currentPlayer === 'B' && index % 5 !== 4) {
+                newIndex += distance; // Move left for Player B (which is actually right in terms of index)
+            }
             break;
         case 'R':
-            step = currentPlayer === 'A' ? 1 : -1;
+            if (currentPlayer === 'A' && index % 5 !== 4) {
+                newIndex += distance; // Move right for Player A
+            } else if (currentPlayer === 'B' && index % 5 !== 0) {
+                newIndex -= distance; // Move right for Player B (which is actually left in terms of index)
+            }
             break;
         case 'F':
-            step = currentPlayer === 'A' ? -5 : 5;
+            if (currentPlayer === 'A' && index >= 5) {
+                newIndex -= 5 * distance; // Move forward for Player A
+            } else if (currentPlayer === 'B' && index < 20) {
+                newIndex += 5 * distance; // Move forward for Player B
+            }
             break;
         case 'B':
-            step = currentPlayer === 'A' ? 5 : -5;
+            if (currentPlayer === 'A' && index < 20) {
+                newIndex += 5 * distance; // Move backward for Player A
+            } else if (currentPlayer === 'B' && index >= 5) {
+                newIndex -= 5 * distance; // Move backward for Player B
+            }
             break;
         default:
-            alert('Invalid direction');
-            return index;
+            return index; // Invalid direction, return the current index
     }
 
-    return index + (step * distance);
+    // Ensure the new index is within bounds
+    if (newIndex < 0 || newIndex >= pieces.length) {
+        return index;
+    }
+
+    return newIndex;
 }
 
 function calculateDiagonalNewIndex(index, direction, distance) {
-    let step;
+    let newIndex = index;
+
     switch (direction) {
         case 'FL':
-            step = currentPlayer === 'A' ? -6 : 6; // Forward-Left
+            if (currentPlayer === 'A' && index % 5 !== 0 && index >= 5) {
+                newIndex -= 6 * distance; // Forward-Left for Player A
+            } else if (currentPlayer === 'B' && index % 5 !== 4 && index < 20) {
+                newIndex += 6 * distance; // Forward-Left for Player B (which is actually Backward-Right)
+            }
             break;
         case 'FR':
-            step = currentPlayer === 'A' ? -4 : 4; // Forward-Right
+            if (currentPlayer === 'A' && index % 5 !== 4 && index >= 5) {
+                newIndex -= 4 * distance; // Forward-Right for Player A
+            } else if (currentPlayer === 'B' && index % 5 !== 0 && index < 20) {
+                newIndex += 4 * distance; // Forward-Right for Player B (which is actually Backward-Left)
+            }
             break;
         case 'BL':
-            step = currentPlayer === 'A' ? 4 : -4; // Backward-Left
+            if (currentPlayer === 'A' && index % 5 !== 0 && index < 20) {
+                newIndex += 4 * distance; // Backward-Left for Player A
+            } else if (currentPlayer === 'B' && index % 5 !== 4 && index >= 5) {
+                newIndex -= 4 * distance; // Backward-Left for Player B (which is actually Forward-Right)
+            }
             break;
         case 'BR':
-            step = currentPlayer === 'A' ? 6 : -6; // Backward-Right
+            if (currentPlayer === 'A' && index % 5 !== 4 && index < 20) {
+                newIndex += 6 * distance; // Backward-Right for Player A
+            } else if (currentPlayer === 'B' && index % 5 !== 0 && index >= 5) {
+                newIndex -= 6 * distance; // Backward-Right for Player B (which is actually Forward-Left)
+            }
             break;
         default:
-            alert('Invalid direction');
-            return index;
+            return index; // Invalid direction, return the current index
     }
 
-    return index + (step * distance);
+    // Ensure the new index is within bounds
+    if (newIndex < 0 || newIndex >= pieces.length) {
+        return index;
+    }
+
+    return newIndex;
 }
+
 
 function isValidMove(piece, index, newIndex) {
     if (newIndex < 0 || newIndex >= pieces.length) return false;
