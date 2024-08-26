@@ -87,19 +87,25 @@
             <!-- Grid cells will be populated by JavaScript -->
         </div>
         <div id="selected-piece">Selected: None</div>
+        
+        <!-- Move History Section -->
+        <div id="move-history">
+            <h3>Move History:</h3>
+            <ul id="history-list"></ul>
+        </div>
+        
         <div class="controls">
             <button id="move-left" onclick="movePiece('L')">L</button>
             <button id="move-right" onclick="movePiece('R')">R</button>
             <button id="move-forward" onclick="movePiece('F')">F</button>
             <button id="move-backward" onclick="movePiece('B')">B</button>
-            <!-- Diagonal buttons, initially hidden -->
             <button id="move-fl" onclick="movePiece('FL')" style="display: none;">FL</button>
             <button id="move-fr" onclick="movePiece('FR')" style="display: none;">FR</button>
             <button id="move-bl" onclick="movePiece('BL')" style="display: none;">BL</button>
             <button id="move-br" onclick="movePiece('BR')" style="display: none;">BR</button>
         </div>
-        
     </div>
+    
     <script src="game.js"></script>
 </body>
 </html>
